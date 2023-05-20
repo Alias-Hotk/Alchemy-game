@@ -1,17 +1,30 @@
 name: CI
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    
-      - name: Автоформатирование кода с помощью Black
-        run: |
-          black .
+      - name: Checkout кода
+        uses: actions/checkout@v2
 
-      - name: Запуск статического анализа кода
-        run: |
-          pylint .
+      - name: Установка зависимостей
+        run: pip install -r requirements.txt
+
+      - name: Запуск тестов
+        run: pytest test/test_file_open.py test/test_menu.py
+
+      - name: Форматирование кода
+        run: black .
+
+      - name: Статический анализ кода
+        run: pylint .
+
