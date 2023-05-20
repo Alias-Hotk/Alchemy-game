@@ -9,7 +9,10 @@ jobs:
     steps:
       - name: Checkout кода
         uses: actions/checkout@v2
-
+     
+      - name: Установка зависимостей
+        run: pip install pytest
+        
       - name: Запуск тестов
         run: pytest test/test_file_open.py test/test_menu.py
 
