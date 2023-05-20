@@ -1,0 +1,27 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout кода
+        uses: actions/checkout@v2
+
+      - name: Установка зависимостей
+        run: |
+          pip install -r requirements.txt
+
+      - name: Запуск юнит-тестов
+        run: |
+          python -m unittest discover tests/
+
+      - name: Автоформатирование кода с помощью Black
+        run: |
+          black .
+
+      - name: Запуск статического анализа кода
+        run: |
+          pylint .
