@@ -10,9 +10,6 @@ jobs:
       - name: Checkout кода
         uses: actions/checkout@v2
 
-      - name: Установка зависимостей
-        run: pip install -r requirements.txt
-
       - name: Запуск тестов
         run: pytest test/test_file_open.py test/test_menu.py
 
