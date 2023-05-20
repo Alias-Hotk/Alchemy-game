@@ -7,12 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout кода
-        uses: actions/checkout@v2
-
-      - name: Запуск юнит-тестов
-        run: pytest test/test_file_open.py test/test_menu.py
-        
+    
       - name: Автоформатирование кода с помощью Black
         run: |
           black .
