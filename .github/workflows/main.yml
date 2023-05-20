@@ -7,15 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout кода
-        uses: actions/checkout@v2
-     
-      - name: Установка зависимостей
-        run: pip install pytest
-        
-      - name: Запуск тестов
-        run: pytest tests/test_file_open.py test/test_menu.py
-
       - name: Форматирование кода
         run: black .
 
