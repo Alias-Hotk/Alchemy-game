@@ -22,7 +22,7 @@ jobs:
       run: mkdir release
       
     - name: Перемещение исполняемого файла
-      run: mv dist/AlchemPy release/
+      run: mv dist/AlchemPy release/AlchemPy.exe
       
     - name: Копирование дополнительных файлов
       run: |
@@ -49,6 +49,57 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release/AlchemPy
-        asset_name: AlchemPy
+        asset_path: ./release/AlchemPy.exe
+        asset_name: AlchemPy.exe
         asset_content_type: application/octet-stream
+        
+    - name: Загрузка дополнительных файлов в релиз
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/Recipes.dat
+        asset_name: Recipes.dat
+        asset_content_type: application/octet-stream
+        
+    - name: Загрузка дополнительных файлов в релиз
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/cable.dat
+        asset_name: cable.dat
+        asset_content_type: application/octet-stream
+        
+    - name: Загрузка дополнительных файлов в релиз
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/gnomik.dat
+        asset_name: gnomik.dat
+        asset_content_type: application/octet-stream
+        
+    - name: Загрузка дополнительных файлов в релиз
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/leon.dat
+        asset_name: leon.dat
+        asset_content_type: application/octet-stream
+        
+    - name: Загрузка дополнительных файлов в релиз
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/saveli.dat
+        asset_name: saveli.dat
+        asset_content_type: application/octet-stream
+
