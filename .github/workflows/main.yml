@@ -1,44 +1,46 @@
-name: Создание релиза
+name: Build and Release
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Запускать вручную
 
 jobs:
-  build:
+  build_and_release:
+    name: Build and Release
     runs-on: ubuntu-latest
 
     steps:
-      - name: Проверка репозитория
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Установка Python
+      - name: Set Up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x' # Укажите нужную версию Python
+          python-version: 3.9  # Укажите требуемую версию Python
 
-      - name: Установка pyinstaller
-        run: pip install pyinstaller
+      - name: Build Application
+        run: |
+          pip install pyinstaller
+          pyinstaller AlchemPy.py --onefile
+          mv dist/AlchemPy.exe AlchemPy.exe
 
-      - name: Сборка приложения
-        run: pyinstaller --onefile AlchemPy.py
-
-      - name: Создание релиза
+      - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
-          body: |
-            Релиз создан автоматически.
+          tag_name: v1.0.0  # Укажите желаемую версию релиза
+          release_name: Release v1.0.0  # Укажите имя релиза
+          draft: false
+          prerelease: false
 
-      - name: Загрузка файлов релиза
+      - name: Upload Executable
+        id: upload_executable
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/AlchemPy
-          asset_name: AlchemPy
+          asset_path: ./AlchemPy.exe
+          asset_name: AlchemPy.exe
           asset_content_type: application/octet-stream
