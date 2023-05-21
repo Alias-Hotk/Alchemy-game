@@ -30,7 +30,7 @@ jobs:
 
       - name: Create Profiles Directory
         run: |
-          mkdir profiles
+          mkdir -p profiles
 
       - name: Move Data Files
         run: |
