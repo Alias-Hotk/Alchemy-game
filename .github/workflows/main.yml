@@ -19,6 +19,10 @@ jobs:
         with:
           python-version: 3.x
       
+      - name: Install PyInstaller
+        run: |
+          pip install pyinstaller
+          
       - name: Build executable
         run: |
           pyinstaller --onefile AlchemPy.py
