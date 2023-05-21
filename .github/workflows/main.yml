@@ -21,7 +21,7 @@ jobs:
           python-version: '3.9'
 
       - name: Install dependencies
-        run: pip install scikit-learn
+        run: pip install pyinstaller
 
       - name: Build executable
         run: pyinstaller Alchem.py
