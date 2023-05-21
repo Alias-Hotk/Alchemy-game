@@ -42,13 +42,3 @@ jobs:
           asset_path: dist/AlchemPy
           asset_name: AlchemPy
           asset_content_type: application/octet-stream
-
-  cleanup:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Очистка
-        run: rm -rf dist/
-
-
-
