@@ -1,46 +1,54 @@
-name: Build and Release
+name: Создание релиза
 
 on:
-  workflow_dispatch:  # Запускать вручную
+  workflow_dispatch:
 
 jobs:
-  build_and_release:
-    name: Build and Release
+  build:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set Up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9  # Укажите требуемую версию Python
-
-      - name: Build Application
-        run: |
-          pip install pyinstaller
-          pyinstaller AlchemPy.py --onefile
-          mv dist/AlchemPy.exe AlchemPy.exe
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v1.0.0  # Укажите желаемую версию релиза
-          release_name: Release v1.0.0  # Укажите имя релиза
-          draft: false
-          prerelease: false
-
-      - name: Upload Executable
-        id: upload_executable
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./AlchemPy.exe
-          asset_name: AlchemPy.exe
-          asset_content_type: application/octet-stream
+    - name: Checkout репозитория
+      uses: actions/checkout@v2
+      
+    - name: Установка зависимостей
+      run: |
+        pip install pyinstaller
+        
+    - name: Сборка приложения
+      run: pyinstaller -F AlchemPy.py
+      
+    - name: Создание папки релиза
+      run: mkdir release
+      
+    - name: Перемещение исполняемого файла
+      run: mv dist/AlchemPy release/
+      
+    - name: Копирование дополнительных файлов
+      run: |
+        cp Recipes.dat release/
+        cp profiles/cable.dat release/
+        cp profiles/gnomik.dat release/
+        cp profiles/leon.dat release/
+        cp profiles/saveli.dat release/
+      
+    - name: Создание релиза
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+        
+    - name: Загрузка файлов в релиз
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/AlchemPy
+        asset_name: AlchemPy
+        asset_content_type: application/octet-stream
