@@ -1,105 +1,63 @@
-name: Создание релиза
+name: Create Release
 
 on:
   workflow_dispatch:
+    inputs:
+      release_name:
+        description: 'Release'
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout репозитория
-      uses: actions/checkout@v2
-      
-    - name: Установка зависимостей
-      run: |
-        pip install pyinstaller
-        
-    - name: Сборка приложения
-      run: pyinstaller -F AlchemPy.py
-      
-    - name: Создание папки релиза
-      run: mkdir release
-      
-    - name: Перемещение исполняемого файла
-      run: mv dist/AlchemPy release/AlchemPy.exe
-      
-    - name: Копирование дополнительных файлов
-      run: |
-        cp Recipes.dat release/
-        cp profiles/cable.dat release/
-        cp profiles/gnomik.dat release/
-        cp profiles/leon.dat release/
-        cp profiles/saveli.dat release/
-      
-    - name: Создание релиза
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release v${{ github.run_number }}
-        draft: false
-        prerelease: false
-        
-    - name: Загрузка файлов в релиз
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release/AlchemPy.exe
-        asset_name: AlchemPy.exe
-        asset_content_type: application/octet-stream
-        
-    - name: Загрузка дополнительных файлов в релиз
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release/Recipes.dat
-        asset_name: Recipes.dat
-        asset_content_type: application/octet-stream
-        
-    - name: Загрузка дополнительных файлов в релиз
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release/cable.dat
-        asset_name: cable.dat
-        asset_content_type: application/octet-stream
-        
-    - name: Загрузка дополнительных файлов в релиз
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release/gnomik.dat
-        asset_name: gnomik.dat
-        asset_content_type: application/octet-stream
-        
-    - name: Загрузка дополнительных файлов в релиз
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release/leon.dat
-        asset_name: leon.dat
-        asset_content_type: application/octet-stream
-        
-    - name: Загрузка дополнительных файлов в релиз
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release/saveli.dat
-        asset_name: saveli.dat
-        asset_content_type: application/octet-stream
 
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install PyInstaller
+        run: |
+          python -m pip install pyinstaller
+
+      - name: Build Executable
+        run: |
+          pyinstaller --onefile AlchemPy.py
+
+      - name: Create Profiles Directory
+        run: |
+          mkdir profiles
+
+      - name: Move Data Files
+        run: |
+          mv cable.dat profiles/
+          mv gnomik.dat profiles/
+          mv leon.dat profiles/
+          mv saveli.dat profiles/
+
+      - name: Create Release Archive
+        run: |
+          zip -r release.zip AlchemPy.exe Recipes.dat profiles/
+
+      - name: Upload Release
+        uses: actions/upload-artifact@v2
+        with:
+          name: Release
+          path: release.zip
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: ${{ github.event.inputs.release_name }}
+          body: |
+            Release created by GitHub Actions.
+          draft: false
+          prerelease: false
