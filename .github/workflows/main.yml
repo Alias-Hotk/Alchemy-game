@@ -24,7 +24,7 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build executable
-        run: pyinstaller Alchem.py
+        run: pyinstaller AlchemPy.py
 
       - name: Create release
         uses: actions/create-release@v1
