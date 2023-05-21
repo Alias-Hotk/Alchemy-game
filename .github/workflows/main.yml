@@ -1,41 +1,53 @@
 name: Build and Release
 
 on:
-  workflow_dispatch:
   push:
     branches:
-      - master
+      - main
 
 jobs:
-  build_and_release:
-    name: Build and Release
+  build-and-release:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
+      
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
-
+          python-version: 3.x
+      
       - name: Install dependencies
-        run: pip install pyinstaller
-
+        run: |
+          pip install -r requirements.txt
+      
       - name: Build executable
-        run: pyinstaller AlchemPy.py
-
+        run: |
+          pyinstaller --onefile AlchemPy.py
+          mkdir release
+          mv dist/AlchemPy release/AlchemPy
+      
       - name: Create release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0 
-          release_name: Release v1.0
+          tag_name: v${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: false
-          files: |
-            dist/AlchemPy
+      
+      - name: Upload executable
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release/AlchemPy
+          asset_name: AlchemPy.exe
+          asset_content_type: application/octet-stream
 
 
