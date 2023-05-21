@@ -14,7 +14,7 @@ jobs:
       - name: Установка Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.x' # Укажите нужную версию Python
 
       - name: Установка pyinstaller
         run: pip install pyinstaller
@@ -23,19 +23,25 @@ jobs:
         run: pyinstaller --onefile AlchemPy.py
 
       - name: Создание релиза
+        id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: |
-            dist/AlchemPy
-            Recipes.dat
-            profiles/cable.dat
-            profiles/gnomik.dat
-            profiles/leon.dat
-            profiles/saveli.dat
           tag_name: v${{ github.run_number }}
           release_name: Release ${{ github.run_number }}
           body: |
             Релиз создан автоматически.
+
+      - name: Загрузка файлов релиза
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/AlchemPy
+          asset_name: AlchemPy
+          asset_content_type: application/octet-stream
 
   cleanup:
     runs-on: ubuntu-latest
@@ -43,7 +49,6 @@ jobs:
     steps:
       - name: Очистка
         run: rm -rf dist/
-
 
 
 
